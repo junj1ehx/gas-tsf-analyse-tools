@@ -338,9 +338,6 @@ def analyze_results(results_folder, output_folder):
     save_metrics_to_csv(all_metrics, metrics_csv_path)
 
 def calculate_well_metrics(pred, true):
-    # alignment
-    pred = pred[1:]
-    true = true[0:-1]
 
     """Calculate MSE and MAE for a single well's predictions"""
     # Handle NaN values
@@ -352,6 +349,9 @@ def calculate_well_metrics(pred, true):
         return np.nan, np.nan
         
     try:
+        # alignment
+        pred_clean = pred_clean[1:]
+        true_clean = true_clean[0:-1]
         mse = mean_squared_error(true_clean, pred_clean)
         mae = mean_absolute_error(true_clean, pred_clean)
         return mse, mae
@@ -653,9 +653,9 @@ def well_statistics(results_folder, output_folder):
 
 if __name__ == "__main__":
     plt.rcParams['font.family'] = 'SimHei'    
-    results_folder = '/home/gbu-hkx/project/gas/Time-Series-Library-gas/result_for_pic_1203/all'
+    results_folder = '/home/gbu-hkx/project/gas/Time-Series-Library-gas/result_for_pic_1204/12_12'
     # results_folder = "/home/gbu-hkx/project/gas/Time-Series-Library/results_backup/results/long_term_forecast_/home/gbu-hkx/project/gas/Time-Series-Library/dataset/gas_all/"
-    output_folder = 'analysis_output_1203'
+    output_folder = 'analysis_output_1204/12_12'
     analyze_results(results_folder, output_folder)
     compare_well_performances(results_folder, output_folder)
     well_statistics(results_folder, output_folder)
