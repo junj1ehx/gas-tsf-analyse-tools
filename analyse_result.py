@@ -288,11 +288,11 @@ def analyze_results(results_folder, output_folder):
             pl = int(re.search(r'pl(\d+)', block_name).group(1))
 
             # Load well information
-            well_info_files = {
-                '桃49区块': f'outputs/dataset/blocks/桃49区块_well_info_seq{sl}_label{ll}_pred{pl}.csv',
-                '苏14区块': f'outputs/dataset/blocks/苏14区块_well_info_seq{sl}_label{ll}_pred{pl}.csv',
-                '苏59区块': f'outputs/dataset/blocks/苏59区块_well_info_seq{sl}_label{ll}_pred{pl}.csv'
-            }
+            # well_info_files = {
+            #     '桃49区块': f'outputs/dataset/blocks/桃49区块_well_info_seq{sl}_label{ll}_pred{pl}.csv',
+            #     '苏14区块': f'outputs/dataset/blocks/苏14区块_well_info_seq{sl}_label{ll}_pred{pl}.csv',
+            #     '苏59区块': f'outputs/dataset/blocks/苏59区块_well_info_seq{sl}_label{ll}_pred{pl}.csv'
+            # }
             well_location_files = {
                 '桃49区块': f'outputs/dataset/blocks/桃49区块_data_location_seq{sl}_label{ll}_pred{pl}.csv',
                 '苏14区块': f'outputs/dataset/blocks/苏14区块_data_location_seq{sl}_label{ll}_pred{pl}.csv',
@@ -387,10 +387,10 @@ def compare_well_performances(results_folder, output_folder):
         if not block_name:
             continue
             
-        # Load well information
-        well_info_path = f'outputs/dataset/blocks/{block_name}_well_info_seq{sl}_label{ll}_pred{pl}.csv'
-        well_df = pd.read_csv(well_info_path)
-        well_df = well_df[well_df['set'] == 'test']  # Only use test set data
+        # # Load well information
+        # well_info_path = f'outputs/dataset/blocks/{block_name}_well_info_seq{sl}_label{ll}_pred{pl}.csv'
+        # well_df = pd.read_csv(well_info_path)
+        # well_df = well_df[well_df['set'] == 'test']  # Only use test set data
         
         well_location_files = {
                 '桃49区块': f'outputs/dataset/blocks/桃49区块_data_location_seq{sl}_label{ll}_pred{pl}.csv',
@@ -466,8 +466,17 @@ def compare_well_performances(results_folder, output_folder):
         # Set font for Chinese characters
         plt.rcParams['font.family'] = ['SimHei']  # For Chinese characters
         plt.rcParams['axes.unicode_minus'] = False    # For minus sign
+
+        # Read historical data from original CSV
+        historical_csv_path = f'outputs/dataset/{well_name}.csv'
+        historical_df = pd.read_csv(historical_csv_path)
+        historical_values = historical_df['OT'].values[:sl]  # Replace 'target_column' with your actual column name
+
+        # Combine historical and true values
+        combined_values = np.concatenate([historical_values, model_data['true']])
+
         # Plot true values first
-        plt.plot(range(len(model_data['true'])), model_data['true'], 
+        plt.plot(range(len(combined_values)), combined_values, 
                 label='True Values', 
                 color='red',
                 linestyle='-',
@@ -502,7 +511,7 @@ def compare_well_performances(results_folder, output_folder):
             # align the data to the true values in model data by checking if true values are equal to the data
             # assert len(data['true']) == len(data['pred'])
             adjusted_pred = data['pred']
-            x = range(sl - model_sl, len(adjusted_pred)-1)
+            x = range(sl - model_sl + sl, len(adjusted_pred)-1 + sl)
             # adjusted_pred = adjusted_pred[:model_pl]
             if len(adjusted_pred) > 0:  # Only plot if we have data
                 # use model_colors to get the color
@@ -653,10 +662,10 @@ def well_statistics(results_folder, output_folder):
 
 if __name__ == "__main__":
     plt.rcParams['font.family'] = 'SimHei'    
-    results_folder = '/home/gbu-hkx/project/gas/Time-Series-Library-gas/result_for_pic_1204/12_12'
+    results_folder = '/home/gbu-hkx/project/gas/Time-Series-Library-gas/1211_result_32/results_for_pic/6_3'
     # results_folder = "/home/gbu-hkx/project/gas/Time-Series-Library/results_backup/results/long_term_forecast_/home/gbu-hkx/project/gas/Time-Series-Library/dataset/gas_all/"
-    output_folder = 'analysis_output_1204/12_12'
+    output_folder = 'analysis_outputs_1211/6_3_new'
     analyze_results(results_folder, output_folder)
     compare_well_performances(results_folder, output_folder)
-    well_statistics(results_folder, output_folder)
+    # well_statistics(results_folder, output_folder)
     
